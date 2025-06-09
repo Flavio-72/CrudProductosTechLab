@@ -57,7 +57,7 @@ public class CarritoService {
             if (item.getCantidad() >= 3) {
                 double descuento = itemSubtotal * 0.1;
                 itemSubtotal -= descuento;
-                System.out.printf("%s - $%.2f (10%% descuento aplicado)\n",
+                System.out.printf("%s → $%.2f (10%% descuento aplicado)\n",
                         item, itemSubtotal);
             } else {
                 System.out.printf("%s\n", item);

@@ -2,9 +2,11 @@ package com.techlab.ui;
 
 import com.techlab.model.Carrito;
 import com.techlab.model.Cliente;
+import com.techlab.model.Pedido;
 import com.techlab.repository.ClienteRepository;
 import com.techlab.repository.Inventario;
 import com.techlab.service.CarritoService;
+import com.techlab.service.PedidoService;
 import com.techlab.util.Utils;
 
 import java.util.InputMismatchException;
@@ -14,9 +16,10 @@ public class InterfazUsuario {
     private final Scanner scanner = new Scanner(System.in);
     private final Carrito carrito = new Carrito();
     private final CarritoService carritoService = new CarritoService();
+    private final PedidoService pedidoService = new PedidoService();
 
     public void iniciar() {
-        System.out.println("=== TechLab ===");
+        System.out.println("\n=== TechLab ===");
 
         boolean continuar = true;
         while (continuar) {
@@ -27,7 +30,8 @@ public class InterfazUsuario {
                 case 1 -> agregarAlCarrito();
                 case 2 -> carritoService.mostrarResumen(carrito);
                 case 3 -> confirmarCompra();
-                case 4 -> {
+                case 4 -> pedidoService.mostrarTodosPedidos();
+                case 5 -> {
                     System.out.println("¡Gracias por su visita!");
                     continuar = false;
                 }
@@ -43,7 +47,8 @@ public class InterfazUsuario {
         System.out.println("1. Agregar producto");
         System.out.println("2. Ver carrito");
         System.out.println("3. Confirmar compra");
-        System.out.println("4. Salir");
+        System.out.println("4. Ver pedidos");
+        System.out.println("5. Salir");
     }
 
     private void agregarAlCarrito() {
@@ -65,6 +70,8 @@ public class InterfazUsuario {
         System.out.println("Tip: 3+ unidades = 10% descuento");
         carritoService.agregarProducto(carrito, id, cantidad);
         System.out.println("✅ Producto agregado correctamente");
+        System.out.printf("Agregado: %s x%d ud.\n",
+                Inventario.buscarPorId(id).getNombre(), cantidad);
     }
 
     private void identificarCliente() {
@@ -115,9 +122,15 @@ public class InterfazUsuario {
         String respuesta = scanner.nextLine().toLowerCase();
 
         if (respuesta.equals("s") || respuesta.equals("si") || respuesta.equals("sí")) {
+            // CREAR EL PEDIDO
+            Pedido pedido = pedidoService.crearPedido(carrito);
+
             System.out.println("\n✅ ¡COMPRA CONFIRMADA!");
-            System.out.println("Gracias por su compra, " +
-                    (carrito.getCliente() != null ? carrito.getCliente().getNombreCompleto() : "Cliente"));
+            System.out.println("Se ha generado el pedido: " + pedido.getCodigo());
+            System.out.println("Gracias por su compra, " + pedido.getCliente().getNombreCompleto());
+
+            // Mostrar detalle del pedido creado
+            pedidoService.mostrarDetallePedido(pedido);
 
             limpiarCarrito();
             System.out.println("\nPuede continuar comprando con otro cliente...");

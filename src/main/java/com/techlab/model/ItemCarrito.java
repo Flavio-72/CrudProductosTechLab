@@ -37,7 +37,8 @@ public class ItemCarrito {
 
     @Override
     public String toString() {
-        return String.format("%s x%d - $%.2f",
+        return String.format("%s x%d  $%.2f",
                 producto.getNombre(), cantidad, getSubtotal());
     }
+
 }
