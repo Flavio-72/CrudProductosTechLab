@@ -28,11 +28,16 @@ public class CarritoService {
     public void agregarProducto(Carrito carrito, int idProducto, int cantidad) {
         Producto producto = Inventario.buscarPorId(idProducto);
 
-        // Descontar stock
-        producto.setStock(producto.getStock() - cantidad);
-
-        // Agregar al carrito (maneja duplicados automáticamente)
+        // SOLO agregar al carrito, NO descontar stock aún
         carrito.agregarProducto(producto, cantidad);
+    }
+
+    // NUEVO: Descontar stock al confirmar compra
+    public void procesarCompra(Carrito carrito) {
+        for (ItemCarrito item : carrito.getItems()) {
+            Producto producto = item.getProducto();
+            producto.setStock(producto.getStock() - item.getCantidad());
+        }
     }
 
     public void mostrarResumen(Carrito carrito) {
