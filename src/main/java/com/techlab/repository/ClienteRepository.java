@@ -20,6 +20,19 @@ public class ClienteRepository {
         return null;
     }
 
+    public static void mostrarTodosClientes() {
+        System.out.println("\n=== TODOS LOS CLIENTES ===");
+
+        if (clientes.isEmpty()) {
+            System.out.println("No hay clientes registrados");
+            return;
+        }
+
+        for (Cliente cliente : clientes) {
+            System.out.println(cliente);
+        }
+    }
+
     public static boolean existe(String email) {
         return buscarPorEmail(email) != null;
     }

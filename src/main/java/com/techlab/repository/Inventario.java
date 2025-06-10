@@ -32,4 +32,25 @@ public class Inventario {
             System.out.println(producto);
         }
     }
+    public static void agregarProducto(String nombre, double precio, int stock) {
+        productos.add(new Producto(nombre, precio, stock));
+    }
+
+    public static void modificarNombre(int id, String nuevoNombre) {
+        Producto producto = buscarPorId(id);
+        if (producto != null) {
+            producto.setNombre(nuevoNombre);
+        }
+    }
+
+    public static void modificarPrecio(int id, double nuevoPrecio) {
+        Producto producto = buscarPorId(id);
+        if (producto != null) {
+            producto.setPrecio(nuevoPrecio);
+        }
+    }
+
+    public static void eliminarProducto(int id) {
+        productos.removeIf(p -> p.getId() == id);
+    }
 }
