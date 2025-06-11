@@ -1,5 +1,6 @@
 package com.techlab.service;
 
+import com.techlab.exception.ProductoNoEncontradoException;
 import com.techlab.model.Carrito;
 import com.techlab.model.ItemCarrito;
 import com.techlab.model.Producto;
@@ -9,23 +10,23 @@ import com.techlab.util.Utils;
 public class CarritoService {
 
     public String validarAgregarProducto(int idProducto, int cantidad) {
-        Producto producto = Inventario.buscarPorId(idProducto);
+        try {
+            Producto producto = Inventario.buscarPorId(idProducto);
 
-        if (producto == null) {
-            return "Producto no encontrado";
+            if (cantidad <= 0) {
+                return "Cantidad debe ser mayor a 0";
+            }
+
+            if (cantidad > producto.getStock()) {
+                return "Stock insuficiente. Disponible: " + producto.getStock();
+            }
+
+            return null; // null = válido
+
+        } catch (ProductoNoEncontradoException e) {
+            return e.getMessage(); // Devuelve: "Producto con ID X no encontrado"
         }
-
-        if (cantidad <= 0) {
-            return "Cantidad debe ser mayor a 0";
-        }
-
-        if (cantidad > producto.getStock()) {
-            return "Stock insuficiente. Disponible: " + producto.getStock();
-        }
-
-        return null; // null = válido
     }
-
     public void agregarProducto(Carrito carrito, int idProducto, int cantidad) {
         Producto producto = Inventario.buscarPorId(idProducto);
 

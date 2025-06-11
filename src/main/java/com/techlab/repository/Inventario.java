@@ -1,16 +1,20 @@
 package com.techlab.repository;
 
+import com.techlab.model.Bebida;
+import com.techlab.model.Comida;
 import com.techlab.model.Producto;
 import java.util.ArrayList;
 import java.util.List;
+import com.techlab.exception.ProductoNoEncontradoException;
 
 public class Inventario {
     private static final List<Producto> productos = new ArrayList<>();
 
     public static void inicializar() {
-        productos.add(new Producto("Café Premium", 3000.0, 50));
-        productos.add(new Producto("Helado Artesanal", 2200.0, 50));
-        productos.add(new Producto("Té Chai", 1000.0, 100));
+        productos.add(new Bebida("Café con leche", 3000.0, 50, 400));
+        productos.add(new Comida("Tostado Jamón y queso", 2200.0, 50, "20/06/25"));
+        productos.add(new Bebida("Té Chai", 1000.0, 100, 500));
+
     }
 
     public static List<Producto> obtenerTodos() {
@@ -23,7 +27,7 @@ public class Inventario {
                 return producto;
             }
         }
-        return null;
+        throw new ProductoNoEncontradoException(id);
     }
 
     public static void mostrarProductos() {
@@ -34,6 +38,14 @@ public class Inventario {
     }
     public static void agregarProducto(String nombre, double precio, int stock) {
         productos.add(new Producto(nombre, precio, stock));
+    }
+
+    public static void agregarComida(String nombre, double precio, int stock, String fechaVencimiento) {
+        productos.add(new Comida(nombre, precio, stock, fechaVencimiento));
+    }
+
+    public static void agregarBebida(String nombre, double precio, int stock, int ml) {
+        productos.add(new Bebida(nombre, precio, stock, ml));
     }
 
     public static void modificarNombre(int id, String nuevoNombre) {

@@ -115,11 +115,11 @@ public class MenuService {
 
     // MENÚ ADMIN
     public void modoAdmin() {
-        System.out.print("Contraseña admin: ");
+        System.out.print("Contraseña admin(Etapa Desarrollo= 'techlab123' ) : ");
         scanner.nextLine();
         String password = scanner.nextLine();
 
-        if (password.equals("admin123")) {
+        if (password.equals("techlab123")) {
             menuAdmin();
         } else {
             System.out.println("Acceso denegado");
@@ -198,6 +198,13 @@ public class MenuService {
     }
 
     private void crearProducto() {
+        System.out.println("\n--- TIPO DE PRODUCTO ---");
+        System.out.println("1. Producto general");
+        System.out.println("2. Comida");
+        System.out.println("3. Bebida");
+
+        int tipo = leerEntero("Seleccione tipo: ");
+
         scanner.nextLine(); // limpiar buffer
 
         System.out.print("Nombre del producto: ");
@@ -205,6 +212,7 @@ public class MenuService {
 
         double precio = leerDouble("Precio: $");
         int stock = leerEntero("Stock inicial: ");
+        scanner.nextLine();
 
         if (precio <= 0) {
             System.out.println("El precio debe ser mayor a 0");
@@ -216,8 +224,24 @@ public class MenuService {
             return;
         }
 
-        Inventario.agregarProducto(nombre, precio, stock);
-        System.out.println("✅ Producto creado correctamente");
+        switch (tipo) {
+            case 1 -> {
+                Inventario.agregarProducto(nombre, precio, stock);
+                System.out.println("✅ Producto creado correctamente");
+            }
+            case 2 -> {
+                System.out.print("Fecha de vencimiento: ");
+                String fechaVencimiento = scanner.nextLine();
+                Inventario.agregarComida(nombre, precio, stock, fechaVencimiento);
+                System.out.println("✅ Comida creada correctamente");
+            }
+            case 3 -> {
+                int ml = leerEntero("Mililitros: ");
+                Inventario.agregarBebida(nombre, precio, stock, ml);
+                System.out.println("✅ Bebida creada correctamente");
+            }
+            default -> System.out.println("Tipo inválido");
+        }
     }
 
     private void modificarProducto() {
