@@ -16,15 +16,13 @@ public class Carrito {
     public List<ItemCarrito> getItems() { return items; }
 
     public void agregarProducto(Producto producto, int cantidad) {
-        // Buscar si el producto ya existe
         for (ItemCarrito item : items) {
             if (item.getProducto().getId() == producto.getId()) {
-                // Producto existe, sumar cantidad
+                // Si existe, sumar cantidad
                 item.setCantidad(item.getCantidad() + cantidad);
                 return;
             }
         }
-        // Producto nuevo, agregarlo
         items.add(new ItemCarrito(producto, cantidad));
     }
 

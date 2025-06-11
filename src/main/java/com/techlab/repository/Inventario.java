@@ -8,9 +8,9 @@ public class Inventario {
     private static final List<Producto> productos = new ArrayList<>();
 
     public static void inicializar() {
-        productos.add(new Producto("Café Premium", 1500.0, 10));
-        productos.add(new Producto("Helado Artesanal", 2200.0, 5));
-        productos.add(new Producto("Té Chai", 1000.0, 8));
+        productos.add(new Producto("Café Premium", 3000.0, 50));
+        productos.add(new Producto("Helado Artesanal", 2200.0, 50));
+        productos.add(new Producto("Té Chai", 1000.0, 100));
     }
 
     public static List<Producto> obtenerTodos() {

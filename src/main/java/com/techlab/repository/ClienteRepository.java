@@ -24,7 +24,7 @@ public class ClienteRepository {
         System.out.println("\n=== TODOS LOS CLIENTES ===");
 
         if (clientes.isEmpty()) {
-            System.out.println("No hay clientes registrados");
+            System.out.println("No hay clientes registrados.");
             return;
         }
 

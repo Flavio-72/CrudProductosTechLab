@@ -12,14 +12,14 @@ public class InterfazUsuario {
     private final Carrito carrito = new Carrito();
     private final CarritoService carritoService = new CarritoService();
     private final PedidoService pedidoService = new PedidoService();
-    private final com.techlab.service.MenuService menuService;
+    private final MenuService menuService;
 
     public InterfazUsuario() {
         this.menuService = new MenuService(scanner, carrito, carritoService, pedidoService);
     }
 
     public void iniciar() {
-        System.out.println("\n=== TechLab ===");
+        System.out.println("\n===== TechLab =====");
 
         boolean continuar = true;
         while (continuar) {

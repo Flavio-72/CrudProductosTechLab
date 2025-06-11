@@ -1,7 +1,3 @@
-// ===================================================
-// CLIENTESERVICE.JAVA - Lógica de negocio para clientes
-// ===================================================
-
 package com.techlab.service;
 
 import com.techlab.model.Cliente;

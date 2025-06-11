@@ -4,6 +4,7 @@ import com.techlab.model.Carrito;
 import com.techlab.model.ItemCarrito;
 import com.techlab.model.Producto;
 import com.techlab.repository.Inventario;
+import com.techlab.util.Utils;
 
 public class CarritoService {
 
@@ -28,11 +29,9 @@ public class CarritoService {
     public void agregarProducto(Carrito carrito, int idProducto, int cantidad) {
         Producto producto = Inventario.buscarPorId(idProducto);
 
-        // SOLO agregar al carrito, NO descontar stock aún
         carrito.agregarProducto(producto, cantidad);
     }
 
-    // NUEVO: Descontar stock al confirmar compra
     public void procesarCompra(Carrito carrito) {
         for (ItemCarrito item : carrito.getItems()) {
             Producto producto = item.getProducto();
@@ -59,11 +58,11 @@ public class CarritoService {
         for (ItemCarrito item : carrito.getItems()) {
             double itemSubtotal = item.getSubtotal();
 
-            if (item.getCantidad() >= 3) {
-                double descuento = itemSubtotal * 0.1;
+             if (item.getCantidad() >= ItemCarrito.cantidadPromo) {
+                double descuento = itemSubtotal * ItemCarrito.descPromoCant/100;
                 itemSubtotal -= descuento;
-                System.out.printf("%s → $%.2f (10%% descuento aplicado)\n",
-                        item, itemSubtotal);
+                 System.out.printf("%s → $%s (%.0f%% descuento aplicado)\n",
+                         item, Utils.separadorDeMiles(itemSubtotal), ItemCarrito.descPromoCant);
             } else {
                 System.out.printf("%s\n", item);
             }
@@ -74,8 +73,8 @@ public class CarritoService {
         double iva = subtotal * 0.21;
         double total = subtotal + iva;
 
-        System.out.printf("\nSubtotal: $%.2f\n", subtotal);
-        System.out.printf("IVA (21%%): $%.2f\n", iva);
-        System.out.printf("TOTAL: $%.2f\n", total);
+        System.out.printf("\nSubtotal: $%s\n", Utils.separadorDeMiles(subtotal));
+        System.out.printf("IVA (21%%): $%s\n", Utils.separadorDeMiles(iva));
+        System.out.printf("TOTAL: $%s\n", Utils.separadorDeMiles(total));
     }
 }

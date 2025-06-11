@@ -1,9 +1,6 @@
 package com.techlab.service;
 
-import com.techlab.model.Carrito;
-import com.techlab.model.Cliente;
-import com.techlab.model.Pedido;
-import com.techlab.model.Producto;
+import com.techlab.model.*;
 import com.techlab.repository.ClienteRepository;
 import com.techlab.repository.Inventario;
 import com.techlab.util.Utils;
@@ -16,6 +13,7 @@ public class MenuService {
     private final Carrito carrito;
     private final CarritoService carritoService;
     private final PedidoService pedidoService;
+    private final ClienteService clienteService = new ClienteService();
 
     public MenuService(Scanner scanner, Carrito carrito,
                        CarritoService carritoService, PedidoService pedidoService) {
@@ -25,8 +23,7 @@ public class MenuService {
         this.pedidoService = pedidoService;
     }
 
-    // ==================== MENÚ PRINCIPAL ====================
-
+    //  MENÚ PRINCIPAL
     public void agregarAlCarrito() {
         if (carrito.getCliente() == null) {
             identificarCliente();
@@ -35,6 +32,7 @@ public class MenuService {
         Inventario.mostrarProductos();
 
         int id = leerEntero("Ingrese ID del producto: ");
+        System.out.println("Tip: " + ItemCarrito.cantidadPromo + "+ unidades = " + ItemCarrito.descPromoCant + "% descuento");
         int cantidad = leerEntero("Ingrese cantidad: ");
 
         String error = carritoService.validarAgregarProducto(id, cantidad);
@@ -43,7 +41,6 @@ public class MenuService {
             return;
         }
 
-        System.out.println("Tip: 3+ unidades = 10% descuento");
         carritoService.agregarProducto(carrito, id, cantidad);
         System.out.println("✅ Producto agregado correctamente");
         System.out.printf("Agregado: %s x%d ud.\n",
@@ -77,7 +74,7 @@ public class MenuService {
             System.out.print("Apellido: ");
             String apellido = scanner.nextLine();
 
-            cliente = new Cliente(nombre, apellido, email);
+            cliente = clienteService.registrarNuevoCliente(nombre, apellido, email);
             ClienteRepository.guardar(cliente);
             carrito.setCliente(cliente);
 
@@ -116,8 +113,7 @@ public class MenuService {
         }
     }
 
-    // ==================== MENÚ ADMIN ====================
-
+    // MENÚ ADMIN
     public void modoAdmin() {
         System.out.print("Contraseña admin: ");
         scanner.nextLine();
@@ -142,7 +138,7 @@ public class MenuService {
                 case 1 -> pedidoService.mostrarTodosPedidos();
                 case 2 -> Inventario.mostrarProductos();
                 case 3 -> ClienteRepository.mostrarTodosClientes();
-                case 4 -> modificarStock();
+                case 4 -> gestionarProductos();
                 case 5 -> {
                     System.out.println("Saliendo del modo admin...");
                     continuar = false;
@@ -157,32 +153,10 @@ public class MenuService {
         System.out.println("1. Ver todos los pedidos");
         System.out.println("2. Ver inventario");
         System.out.println("3. Ver clientes");
-        System.out.println("4. Modificar stock");
+        System.out.println("4. Gestionar productos");
         System.out.println("5. Volver al menú principal");
     }
 
-    private void modificarStock() {
-        Inventario.mostrarProductos();
-
-        int id = leerEntero("ID del producto a modificar: ");
-        Producto producto = Inventario.buscarPorId(id);
-
-        if (producto == null) {
-            System.out.println("Producto no encontrado");
-            return;
-        }
-
-        System.out.println("Stock actual: " + producto.getStock());
-        int nuevoStock = leerEntero("Nuevo stock: ");
-
-        if (nuevoStock < 0) {
-            System.out.println("El stock no puede ser negativo");
-            return;
-        }
-
-        producto.setStock(nuevoStock);
-        System.out.println("✅ Stock actualizado correctamente");
-    }
 
     // ==================== UTILIDADES ====================
 
@@ -198,6 +172,134 @@ public class MenuService {
                 return scanner.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Debe ingresar un número");
+                scanner.nextLine();
+            }
+        }
+    }
+    private void gestionarProductos() {
+        boolean continuar = true;
+        while (continuar) {
+            System.out.println("\n--- GESTIÓN DE PRODUCTOS ---");
+            System.out.println("1. Crear producto");
+            System.out.println("2. Modificar producto");
+            System.out.println("3. Eliminar producto");
+            System.out.println("4. Volver al menú admin");
+
+            int opcion = leerEntero("Seleccione opción: ");
+
+            switch (opcion) {
+                case 1 -> crearProducto();
+                case 2 -> modificarProducto();
+                case 3 -> eliminarProducto();
+                case 4 -> continuar = false;
+                default -> System.out.println("Opción inválida");
+            }
+        }
+    }
+
+    private void crearProducto() {
+        scanner.nextLine(); // limpiar buffer
+
+        System.out.print("Nombre del producto: ");
+        String nombre = Utils.formatearTitleCase(scanner.nextLine());
+
+        double precio = leerDouble("Precio: $");
+        int stock = leerEntero("Stock inicial: ");
+
+        if (precio <= 0) {
+            System.out.println("El precio debe ser mayor a 0");
+            return;
+        }
+
+        if (stock < 0) {
+            System.out.println("El stock no puede ser negativo");
+            return;
+        }
+
+        Inventario.agregarProducto(nombre, precio, stock);
+        System.out.println("✅ Producto creado correctamente");
+    }
+
+    private void modificarProducto() {
+        Inventario.mostrarProductos();
+
+        int id = leerEntero("ID del producto a modificar: ");
+        Producto producto = Inventario.buscarPorId(id);
+
+        if (producto == null) {
+            System.out.println("Producto no encontrado");
+            return;
+        }
+
+        System.out.println("Producto actual: " + producto);
+        System.out.println("\n¿Qué desea modificar?");
+        System.out.println("1. Nombre");
+        System.out.println("2. Precio");
+        System.out.println("3. Stock");
+
+        int opcion = leerEntero("Seleccione opción: ");
+
+        switch (opcion) {
+            case 1 -> {
+                scanner.nextLine();
+                System.out.print("Nuevo nombre: ");
+                String nuevoNombre = Utils.formatearTitleCase(scanner.nextLine());
+                Inventario.modificarNombre(id, nuevoNombre);
+                System.out.println("✅ Nombre actualizado");
+            }
+            case 2 -> {
+                double nuevoPrecio = leerDouble("Nuevo precio: $");
+                if (nuevoPrecio <= 0) {
+                    System.out.println("El precio debe ser mayor a 0");
+                    return;
+                }
+                Inventario.modificarPrecio(id, nuevoPrecio);
+                System.out.println("✅ Precio actualizado");
+            }
+            case 3 -> {
+                int nuevoStock = leerEntero("Nuevo stock: ");
+                if (nuevoStock < 0) {
+                    System.out.println("El stock no puede ser negativo");
+                    return;
+                }
+                producto.setStock(nuevoStock);
+                System.out.println("✅ Stock actualizado");
+            }
+            default -> System.out.println("Opción inválida");
+        }
+    }
+
+    private void eliminarProducto() {
+        Inventario.mostrarProductos();
+
+        int id = leerEntero("ID del producto a eliminar: ");
+        Producto producto = Inventario.buscarPorId(id);
+
+        if (producto == null) {
+            System.out.println("Producto no encontrado");
+            return;
+        }
+
+        System.out.println("Producto a eliminar: " + producto);
+        scanner.nextLine();
+        System.out.print("¿Confirma eliminación? (s/n): ");
+        String confirmacion = scanner.nextLine().toLowerCase();
+
+        if (confirmacion.equals("s") || confirmacion.equals("si") || confirmacion.equals("sí")) {
+            Inventario.eliminarProducto(id);
+            System.out.println("✅ Producto eliminado correctamente");
+        } else {
+            System.out.println("Eliminación cancelada");
+        }
+    }
+
+    private double leerDouble(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            try {
+                return scanner.nextDouble();
+            } catch (InputMismatchException e) {
+                System.out.println("Debe ingresar un número válido");
                 scanner.nextLine();
             }
         }

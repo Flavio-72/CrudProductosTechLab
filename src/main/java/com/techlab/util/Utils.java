@@ -21,4 +21,21 @@ public class Utils {
         return formato.format(numero);
         }
 
+    public static String formatearTitleCase(String texto) {
+        if (texto == null || texto.trim().isEmpty()) return "";
+
+        String[] palabras = texto.trim().toLowerCase().split("\\s+");
+        StringBuilder resultado = new StringBuilder();
+
+        for (int i = 0; i < palabras.length; i++) {
+            if (i > 0) resultado.append(" ");
+            if (palabras[i].length() > 0) {
+                resultado.append(palabras[i].substring(0, 1).toUpperCase())
+                        .append(palabras[i].substring(1));
+            }
+        }
+
+        return resultado.toString();
+    }
+
     }
