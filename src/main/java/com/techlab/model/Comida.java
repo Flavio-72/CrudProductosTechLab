@@ -11,8 +11,7 @@ public class Comida extends Producto {
         return fechaVencimiento;
     }
 
-    @Override
-    public String toString() {
+    public String toStringAdmin() {
         return super.toString() + " - Vence: " + fechaVencimiento;
     }
 

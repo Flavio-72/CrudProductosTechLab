@@ -75,7 +75,6 @@ public class MenuService {
             String apellido = scanner.nextLine();
 
             cliente = clienteService.registrarNuevoCliente(nombre, apellido, email);
-            ClienteRepository.guardar(cliente);
             carrito.setCliente(cliente);
 
             System.out.println("✅ Cliente registrado");
@@ -136,7 +135,7 @@ public class MenuService {
 
             switch (opcion) {
                 case 1 -> pedidoService.mostrarTodosPedidos();
-                case 2 -> Inventario.mostrarProductos();
+                case 2 -> Inventario.mostrarProductosAdmin();
                 case 3 -> ClienteRepository.mostrarTodosClientes();
                 case 4 -> gestionarProductos();
                 case 5 -> {
